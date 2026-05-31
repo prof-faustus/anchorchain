@@ -1,6 +1,6 @@
 {
   "name": "anchorchain",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "AnchorChain: immutable referencing of AI memory states through Bitcoin (BSV) blockchain-indexed volumetric data linking, with file linking and selective disclosure, an AI credit system, and a hardened metering authority.",
   "private": true,
   "type": "module",

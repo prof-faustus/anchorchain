@@ -36,13 +36,16 @@ every read. The provenance graph binds identity → object → anchor, supports
 verifiable cross-agent recall, and tracks derivation lineage across agents.
 
 ### confidential — `privacy`
-Pedersen commitments, homomorphic conservation, and sound Fiat-Shamir
-sigma-protocol range and membership proofs, plus a metadata-obfuscation mode. See
-[SECURITY.md](SECURITY.md) for exact strength and honest labelling.
+Pedersen commitments, homomorphic conservation, sound Fiat-Shamir sigma-protocol
+membership and range proofs, a genuine **Bulletproof** (logarithmic) range proof,
+and a metadata-obfuscation mode (bucket-range and set-membership fields, whole-record
+verification). See [SECURITY.md](SECURITY.md) for exact strength and honest
+labelling.
 
 ### authority — `custody`, `identity`
-Shamir-reconstruction key custody with an anchorable rotation/revocation lifecycle;
-anchorable UUID↔public-key identity binding, replay-hardened challenge-response, and
+Shamir-reconstruction key custody with an anchorable rotation/revocation lifecycle,
+plus **threshold Schnorr** signing that never reconstructs the key; anchorable
+UUID↔public-key identity binding, replay-hardened challenge-response, and
 non-transferable entitlements.
 
 ### metering — `credit`, `settlement`
@@ -51,10 +54,14 @@ anchorable hash chain, overdraft-impossibility (range proof) and conservation; a
 per-op vs periodic settlement with an exact homomorphic equivalence property.
 
 ### surface — `api`, `cli`, `bench`
-`api` exposes typed config, the end-to-end self-test, the deterministic studies, and
-reproduction/verification of committed vectors. `cli` exposes `selftest`,
-`reproduce`, and `bench`. `bench` measures live timings (host-dependent) and exact
-structural sizes (deterministic).
+`api` exposes typed config, the `AnchorChainService` workflow façade (append →
+anchor → confirm-in-block → header-only inclusion via the correct two-tree SPV →
+cross-agent recall), the end-to-end self-test, the deterministic studies, and
+reproduction/verification of committed vectors; it also re-exports the whole public
+surface so consumers import from one place. `cli` exposes `selftest`, `reproduce`,
+and `bench`. `bench` measures live timings (host-dependent) and exact structural
+sizes (deterministic); committed results are in [../BENCHMARKS.md](../BENCHMARKS.md).
+The production `FetchTransport` (in `bsv`) drives `TeranodeClient` over real HTTP.
 
 ## Determinism and CI
 

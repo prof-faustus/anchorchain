@@ -27,20 +27,22 @@ its inclusion. If you need that, it is future work, not a feature here.
 ## Where zero-knowledge actually appears
 
 Zero-knowledge in AnchorChain is confined to **confidential amounts** in the credit
-and settlement layers, via Pedersen commitments and **Fiat-Shamir sigma-protocol**
-proofs built from scratch on the BSV SDK's secp256k1:
+and settlement layers, via Pedersen commitments built from scratch on the BSV SDK's
+secp256k1:
 
-- a **range proof** (bit decomposition + per-bit OR) — a balance is non-negative
-  without revealing it;
+- a **range proof** in two forms — a linear sigma-protocol (bit decomposition +
+  per-bit OR) and a genuine **Bulletproof** (inner-product argument) whose size is
+  **logarithmic** in the bit-width (at 64 bits: 16 group elements vs the linear
+  proof's 192 — see [BENCHMARKS.md](BENCHMARKS.md));
 - a **membership proof** (one-out-of-many) — a committed value is in a public set
-  without revealing which;
+  without revealing which; also used for set-obfuscated metadata;
 - **homomorphic conservation** — the books balance without revealing any amount.
 
-**Honest labelling.** These are sigma-protocol ZK proofs, sound under discrete log
-in the random-oracle model, and **linear** in their statement. They are **not**
-zk-STARKs and **not** Bulletproofs: no trusted setup, no logarithmic aggregation, no
-post-quantum claim. They are real and verifier-checked — see
-[docs/SECURITY.md](docs/SECURITY.md).
+**Honest labelling.** These are sound under discrete log in the random-oracle model,
+with **no trusted setup** and **no post-quantum claim**. The Bulletproof is a real
+Bulletproof; the rest are sigma-protocols. There is **no zk-STARK** — a sound one
+cannot be built honestly from scratch here, so it is not claimed (see
+[docs/SECURITY.md](docs/SECURITY.md)).
 
 ## What it secures, and what it does not
 
@@ -48,7 +50,18 @@ AnchorChain secures the **integrity of what was remembered** — existence,
 integrity, identity, and time of a committed memory/file. It does **not** secure
 model behaviour, data poisoning, or prompt injection. Key custody is **Shamir
 reconstruction**, not threshold ECDSA: the key is reassembled to sign, then
-discarded (see [docs/SECURITY.md](docs/SECURITY.md)).
+discarded. A separate **threshold Schnorr** mode signs *without* reconstructing the
+key (sound for Schnorr, explicitly not threshold ECDSA). See
+[docs/SECURITY.md](docs/SECURITY.md).
+
+## Using it
+
+`AnchorChainService` drives the whole workflow — append a memory → a batch closes →
+anchor it in an OP_RETURN transaction → confirm it in a block → verify inclusion
+header-only with the correct two-tree (batch + block) SPV proof → recall it
+cross-agent. The durable `proofstore` `FileBackend` and the `memstore`/`credit`
+snapshots persist state across restarts. The entire public surface is re-exported
+from `@anchorchain/api`.
 
 ## Packages
 

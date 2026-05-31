@@ -13,6 +13,21 @@ proof is only as strong as the header chain it terminates in. AnchorChain verifi
 inclusion; it reconstructs a Merkle root from a leaf and path and matches it to the
 root a header commits to.
 
+## SPV: the OP_RETURN two-tree proof
+
+The batch Merkle root `R` is carried in the anchor transaction's OP_RETURN; the
+anchor transaction is itself a leaf of the BLOCK's Merkle tree. So a complete proof
+that a memory is anchored is a TWO-tree proof, performed by `AnchorChainService`:
+
+1. the memory leaf is in the batch tree with root `R` (batch Merkle path);
+2. `R` is present in the anchor transaction (parse its OP_RETURN);
+3. the anchor transaction's txid is in the block (txid → block-Merkle branch);
+4. the block's Merkle root is the one its header commits to, in the header chain.
+
+The lower-level `proofentity` helper verifies a single tree (leaf → root → header)
+and is correct for the "leaves are the block's transactions" case; it deliberately
+does NOT model the OP_RETURN indirection. Use the service for end-to-end anchoring.
+
 ## Inclusion proofs are NOT zero-knowledge
 
 - A **plain** Merkle inclusion proof reveals the leaf and its sibling path.
@@ -34,9 +49,13 @@ secp256k1:
 
 - **Schnorr** proof of knowledge of a discrete log.
 - **CDS one-out-of-many OR** (membership, and per-bit bit-ness).
-- **Range proof** by bit decomposition: each bit is committed and proven to be 0 or
-  1 by an OR proof, with the per-bit blindings fixed so the bits provably re-sum to
-  the committed value. Therefore the value lies in `[0, 2^bits)`.
+- **Range proof**, two interchangeable constructions for `[0, 2^bits)`:
+  - *linear* (`proveRange`) — bit decomposition with a per-bit OR proof; size grows
+    linearly in `bits`;
+  - *logarithmic* (`proveRangeBP`) — a genuine **Bulletproof** (Bunz-Bootle-Boneh
+    inner-product argument); size grows as `log2(bits)`. At 64 bits the linear proof
+    is 192 group elements / 256 scalars vs the Bulletproof's 16 / 5. Both are sound;
+    the Bulletproof has **no trusted setup** and makes **no post-quantum claim**.
 - **Conservation**: a Schnorr proof that the net commitment of inputs minus outputs
   has no `G` component, i.e. value is conserved, revealing neither amounts nor the
   excess blinding.
@@ -49,9 +68,20 @@ random-oracle model.** They are explicitly:
   range proof is **linear** in the bit-width.
 - **No trusted setup**, **no post-quantum** claim.
 
-We chose to ship a real, sound, honestly-named sigma-protocol rather than a stub
-labelled "STARK" or "Bulletproof". Where a primitive could not be made sound from
-scratch on the SDK alone, it is absent, not faked.
+## Not delivered: zk-STARK
+
+There is **no zk-STARK** in AnchorChain, and there is no plan to fake one. A sound
+STARK (AIR arithmetisation, FRI low-degree test, the full transparent argument)
+cannot be implemented correctly and safely from scratch on `@bsv/sdk` within this
+project's scope; shipping a toy labelled "STARK" would be dishonest. The wide-value
+performance problem a STARK might address is instead solved by the **Bulletproof**
+range proof above, which is real and verifier-checked. The transparent,
+post-quantum properties a STARK would add are simply not claimed anywhere.
+
+We chose to ship real, sound, honestly-named proofs rather than a stub. Where a
+primitive could not be made sound from scratch on the SDK alone — the STARK, and
+threshold ECDSA — it is absent or replaced by an honestly-labelled alternative, not
+faked.
 
 ## Pedersen generator H
 
@@ -73,6 +103,18 @@ when the full private key exists in memory. This is:
 The property provided is "fewer than `t` shares reveal nothing about the key", plus
 an anchorable rotation/revocation lifecycle. Rotation invalidates old shares for
 signing (they no longer reconstruct the current public key); revocation halts it.
+
+### Threshold Schnorr (no reconstruction)
+
+As a separate, honestly-distinct primitive, `custody` also offers **threshold
+Schnorr** signing in which the key is **never reconstructed**: each party emits a
+partial signature `s_j = k_j + e·λ_j·x_j` over the aggregated nonce, and the sum is
+a valid Schnorr signature because `Σ λ_j x_j = x`. No party ever holds more than its
+own share times a public Lagrange coefficient. Nonces are committed in round one to
+prevent adaptive choice within a session. This is genuinely "key never exists" — for
+SCHNORR. It is **not** threshold ECDSA (which is not attempted), and it is not
+hardened for concurrent sessions (that needs the full FROST two-nonce construction);
+sign one session at a time.
 
 ## Identity and entitlements
 
