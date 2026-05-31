@@ -1,0 +1,54 @@
+{
+  "schemaFingerprintHex": "2e30dd39cffd66555e6cac03d163944c5f3263deb26793548a97d853c87565b2",
+  "memoryLeafDisplayHex": "abc184d1ce9da7a3a3bccc964f7d08110fa2a01b25f80057db94be1fea0cd7ec",
+  "merkleRootDisplayHex": "98db322ee06f322aa0691fe2ea84fcc062a7027a8d881f92518562b1b80b9183",
+  "anchorBlobHex": "4143483183910bb8b1628551921f888d7a02a762c0fc84eae21f69a02a326fe02e32db98000000080b62617463682d6669786564",
+  "studies": {
+    "rangeProofSize": [
+      {
+        "bits": 8,
+        "groupElements": 24,
+        "scalars": 32
+      },
+      {
+        "bits": 16,
+        "groupElements": 48,
+        "scalars": 64
+      },
+      {
+        "bits": 32,
+        "groupElements": 96,
+        "scalars": 128
+      }
+    ],
+    "selectiveDisclosure": [
+      {
+        "leaves": 1024,
+        "level": 2,
+        "fullProofBytes": 332,
+        "disclosedLowerBytes": 76,
+        "savedBytes": 256
+      },
+      {
+        "leaves": 1024,
+        "level": 4,
+        "fullProofBytes": 332,
+        "disclosedLowerBytes": 140,
+        "savedBytes": 192
+      },
+      {
+        "leaves": 1024,
+        "level": 6,
+        "fullProofBytes": 332,
+        "disclosedLowerBytes": 204,
+        "savedBytes": 128
+      }
+    ],
+    "settlementEquivalence": {
+      "ops": 12,
+      "perOpRecords": 12,
+      "periodicRecords": 9,
+      "equivalent": true
+    }
+  }
+}

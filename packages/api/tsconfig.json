@@ -1,0 +1,5 @@
+{ "extends": "../../tsconfig.base.json", "compilerOptions": { "rootDir": "src", "outDir": "dist" }, "include": ["src"], "references": [
+  { "path": "../bsv" }, { "path": "../hashing" }, { "path": "../schema" }, { "path": "../merkle" }, { "path": "../shard" },
+  { "path": "../memstore" }, { "path": "../anchor" }, { "path": "../file" }, { "path": "../proofentity" }, { "path": "../proofstore" },
+  { "path": "../provenance" }, { "path": "../privacy" }, { "path": "../custody" }, { "path": "../identity" }, { "path": "../credit" }, { "path": "../settlement" }
+] }

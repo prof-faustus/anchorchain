@@ -16,6 +16,9 @@
     { "path": "packages/custody" },
     { "path": "packages/identity" },
     { "path": "packages/credit" },
-    { "path": "packages/settlement" }
+    { "path": "packages/settlement" },
+    { "path": "packages/api" },
+    { "path": "packages/bench" },
+    { "path": "packages/cli" }
   ]
 }
