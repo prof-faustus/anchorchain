@@ -1,0 +1,41 @@
+{
+  "network": "mainnet",
+  "nodeEndpoint": "https://api.whatsonchain.com/v1/bsv/main",
+  "timestampMode": "logicalStep",
+  "batch": {
+    "closeOnCount": 1000,
+    "closeOnLogicalIntervalMs": 10000,
+    "maxBatchSize": 262144
+  },
+  "anchor": {
+    "tier": "critical"
+  },
+  "file": {
+    "chunkingRule": "fixedSize",
+    "chunkSizeBytes": 65536,
+    "maxFileBytes": 1073741824
+  },
+  "shard": {
+    "predeterminedLevel": 4
+  },
+  "credit": {
+    "representation": "quota",
+    "confidential": false,
+    "prices": { "anchorWrite": 10, "recallQuery": 1 }
+  },
+  "settlement": {
+    "model": "periodic"
+  },
+  "custody": {
+    "mode": "reconstruction",
+    "threshold": 2,
+    "shares": 3
+  },
+  "identity": {
+    "nonceExpiryMs": 60000
+  },
+  "rateLimit": {
+    "perMinute": 240
+  },
+  "logLevel": "info"
+}

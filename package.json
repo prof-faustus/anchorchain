@@ -1,0 +1,48 @@
+{
+  "name": "anchorchain",
+  "version": "0.1.0",
+  "description": "AnchorChain: immutable referencing of AI memory states through Bitcoin (BSV) blockchain-indexed volumetric data linking, with file linking and selective disclosure, an AI credit system, and a hardened metering authority.",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "workspaces": [
+    "packages/bsv",
+    "packages/hashing",
+    "packages/schema",
+    "packages/merkle",
+    "packages/shard",
+    "packages/memstore",
+    "packages/anchor",
+    "packages/file",
+    "packages/proofentity",
+    "packages/proofstore",
+    "packages/provenance",
+    "packages/privacy",
+    "packages/custody",
+    "packages/identity",
+    "packages/credit",
+    "packages/settlement",
+    "packages/api",
+    "packages/cli",
+    "packages/bench"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "tsc -b --clean",
+    "typecheck": "tsc -b",
+    "lint": "node scripts/format-check.mjs && node scripts/forbidden-scan.mjs",
+    "format:check": "node scripts/format-check.mjs",
+    "scan": "node scripts/forbidden-scan.mjs",
+    "test": "node scripts/run-tests.mjs",
+    "selftest": "node packages/cli/dist/index.js selftest",
+    "reproduce": "node packages/cli/dist/index.js reproduce",
+    "bench": "node packages/cli/dist/index.js bench --ci"
+  },
+  "devDependencies": {
+    "@types/node": "22.10.10",
+    "typescript": "5.7.3"
+  }
+}

@@ -1,0 +1,32 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: 'npm'
+      - run: npm ci
+      - name: Forbidden-token scan (BSV only; no fork ticker, altcoin, foreign unit, tool identity)
+        run: npm run scan
+      - name: Format check
+        run: npm run format:check
+      - name: Strict type-check and build (warnings are errors)
+        run: npm run build
+      - name: Full test suite
+        run: npm test
+      - name: Selftest every layer
+        run: npm run selftest
+      - name: Reproduce all deterministic vectors and figures
+        run: npm run reproduce
+      - name: Bench CI point
+        run: npm run bench

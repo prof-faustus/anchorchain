@@ -1,0 +1,35 @@
+{
+  "source": "Bitcoin (BSV) consecutive headers 179..181, from a public BSV explorer",
+  "headers": [
+    {
+      "height": 179,
+      "version": 1,
+      "previousblockhash": "00000000ca6de0be6c908a7c11f6f1335550824b37408d4a332225a329a65b0d",
+      "merkleroot": "c77891a80c3929fd2db7b5120749dbd35ebdbb10ab92489f98c23953afcfc36b",
+      "time": 1231738005,
+      "bits": 486604799,
+      "nonce": 2546661175,
+      "hash": "00000000c0ab5a6b27502869414c5b004fbca3ba8f291d2c8b2d8dbd6225e170"
+    },
+    {
+      "height": 180,
+      "version": 1,
+      "previousblockhash": "00000000c0ab5a6b27502869414c5b004fbca3ba8f291d2c8b2d8dbd6225e170",
+      "merkleroot": "bd8cfe1837c88caa4ca37df77380d5b0af9692ed92ddbc247cd2aef388691d4f",
+      "time": 1231739452,
+      "bits": 486604799,
+      "nonce": 800571155,
+      "hash": "00000000b5ef0ea215becad97402ce59d1416fe554261405cda943afd2a8c8f2"
+    },
+    {
+      "height": 181,
+      "version": 1,
+      "previousblockhash": "00000000b5ef0ea215becad97402ce59d1416fe554261405cda943afd2a8c8f2",
+      "merkleroot": "ed92b1db0b3e998c0a4351ee3f825fd5ac6571ce50c050b4b45df015092a6c36",
+      "time": 1231740133,
+      "bits": 486604799,
+      "nonce": 792669465,
+      "hash": "00000000dc55860c8a29c58d45209318fa9e9dc2c1833a7226d86bc465afc6e5"
+    }
+  ]
+}

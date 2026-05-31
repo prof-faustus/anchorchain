@@ -1,0 +1,10 @@
+{
+  "name": "@anchorchain/bsv",
+  "version": "0.1.0",
+  "description": "BSV primitives: hashes, the secp256k1 curve, transactions, post-Genesis scripts and OP_RETURN data carriers, block headers, the validated header chain (trust root), and node access.",
+  "type": "module",
+  "exports": { ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" } },
+  "types": "./dist/index.d.ts",
+  "scripts": { "build": "tsc -b", "test": "node --test \"test/**/*.test.ts\"", "lint": "tsc -b" },
+  "dependencies": { "@bsv/sdk": "2.1.4" }
+}
