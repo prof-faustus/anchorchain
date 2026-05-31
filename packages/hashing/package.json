@@ -1,0 +1,10 @@
+{
+  "name": "@anchorchain/hashing",
+  "version": "0.1.0",
+  "description": "Memory-leaf hashing: memoryLeaf(context, vector, timestamp) over double SHA-256, with explicit quantised/raw vector and provenance-compression encode modes.",
+  "type": "module",
+  "exports": { ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" } },
+  "types": "./dist/index.d.ts",
+  "scripts": { "build": "tsc -b", "test": "node --test \"test/**/*.test.ts\"", "lint": "tsc -b" },
+  "dependencies": { "@anchorchain/bsv": "*", "@anchorchain/schema": "*" }
+}

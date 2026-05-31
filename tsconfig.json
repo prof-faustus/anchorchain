@@ -1,6 +1,8 @@
 {
   "files": [],
   "references": [
-    { "path": "packages/bsv" }
+    { "path": "packages/bsv" },
+    { "path": "packages/schema" },
+    { "path": "packages/hashing" }
   ]
 }

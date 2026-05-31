@@ -1,0 +1,10 @@
+{
+  "name": "@anchorchain/schema",
+  "version": "0.1.0",
+  "description": "Canonical object schema (field_id, type, value, timestamp) and schema fingerprinting; deterministic serialisation so dimension/type/field mismatches never collide.",
+  "type": "module",
+  "exports": { ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" } },
+  "types": "./dist/index.d.ts",
+  "scripts": { "build": "tsc -b", "test": "node --test \"test/**/*.test.ts\"", "lint": "tsc -b" },
+  "dependencies": { "@anchorchain/bsv": "*" }
+}
