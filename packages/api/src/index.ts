@@ -6,7 +6,7 @@ export { loadConfig, validateConfig } from './config.js';
 export type { SelftestReport, LayerResult } from './selftest.js';
 export { runSelftest } from './selftest.js';
 
-export type { Studies, RangeSizeRow, DisclosureRow, EquivalenceRow } from './studies.js';
+export type { Studies, RangeSizeRow, RangeComparisonRow, DisclosureRow, EquivalenceRow } from './studies.js';
 export { runStudies } from './studies.js';
 
 export type { ReproVectors, ReproResult } from './reproduce.js';

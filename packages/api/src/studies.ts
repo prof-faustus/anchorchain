@@ -4,7 +4,7 @@
 // these and checks them byte-for-byte against the committed vector.
 import { reduceScalar, doubleSha256 } from '@anchorchain/bsv';
 import type { Scalar } from '@anchorchain/bsv';
-import { proveRange } from '@anchorchain/privacy';
+import { proveRange, proveRangeBP } from '@anchorchain/privacy';
 import { hashLeaf, merkleRoot, merkleProof, proofAssistance, shardProofLevel } from './internal-merkle.js';
 import { disclosedBytes } from '@anchorchain/shard';
 import { settle, equivalent } from '@anchorchain/settlement';
@@ -33,8 +33,19 @@ export interface EquivalenceRow {
   periodicRecords: number;
   equivalent: boolean;
 }
+// Linear (bit-decomposition) vs logarithmic (Bulletproof) range-proof size, in
+// group elements and scalars, at several bit-widths — the reason the Bulletproof
+// path exists for wide confidential balances.
+export interface RangeComparisonRow {
+  bits: number;
+  linearGroupElements: number;
+  linearScalars: number;
+  bulletproofGroupElements: number;
+  bulletproofScalars: number;
+}
 export interface Studies {
   rangeProofSize: RangeSizeRow[];
+  rangeProofComparison: RangeComparisonRow[];
   selectiveDisclosure: DisclosureRow[];
   settlementEquivalence: EquivalenceRow;
 }
@@ -45,6 +56,17 @@ function rangeRow(bits: number): RangeSizeRow {
   const groupElements = r.proof.bitCommits.length + r.proof.bitProofs.reduce((a, p) => a + p.a.length, 0);
   const scalars = r.proof.bitProofs.reduce((a, p) => a + p.e.length + p.s.length, 0);
   return { bits, groupElements, scalars };
+}
+
+function comparisonRow(bits: number): RangeComparisonRow {
+  const lin = proveRange(7n % (1n << BigInt(bits)), detScalar('cmp/lin/' + bits), bits);
+  const bp = proveRangeBP(7n % (1n << BigInt(bits)), detScalar('cmp/bp/' + bits), bits);
+  if (!lin.ok || !bp.ok) throw new Error('comparison study');
+  const linearGroupElements = lin.proof.bitCommits.length + lin.proof.bitProofs.reduce((a, p) => a + p.a.length, 0);
+  const linearScalars = lin.proof.bitProofs.reduce((a, p) => a + p.e.length + p.s.length, 0);
+  const bulletproofGroupElements = 4 + bp.proof.ip.L.length + bp.proof.ip.R.length; // A,S,T1,T2 + L,R per round
+  const bulletproofScalars = 5; // taux, mu, tHat, a, b
+  return { bits, linearGroupElements, linearScalars, bulletproofGroupElements, bulletproofScalars };
 }
 
 function disclosureRow(level: number): DisclosureRow {
@@ -68,6 +90,7 @@ function equivalenceRow(): EquivalenceRow {
 export function runStudies(): Studies {
   return {
     rangeProofSize: [8, 16, 32].map(rangeRow),
+    rangeProofComparison: [8, 16, 32, 64].map(comparisonRow),
     selectiveDisclosure: [2, 4, 6].map(disclosureRow),
     settlementEquivalence: equivalenceRow(),
   };

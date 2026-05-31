@@ -16,6 +16,9 @@ export { proveDlog, verifyDlog, proveOneOfMany, verifyOneOfMany } from './sigma.
 export type { RangeProof, RangeError } from './range.js';
 export { proveRange, verifyRange } from './range.js';
 
+export type { RangeProofBP, InnerProductProof, RangeBPError } from './bulletproofs.js';
+export { proveRangeBP, verifyRangeBP } from './bulletproofs.js';
+
 export type { MembershipProof, MembershipError } from './membership.js';
 export { proveMembership, verifyMembership } from './membership.js';
 

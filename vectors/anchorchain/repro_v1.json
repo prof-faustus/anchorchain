@@ -21,6 +21,36 @@
         "scalars": 128
       }
     ],
+    "rangeProofComparison": [
+      {
+        "bits": 8,
+        "linearGroupElements": 24,
+        "linearScalars": 32,
+        "bulletproofGroupElements": 10,
+        "bulletproofScalars": 5
+      },
+      {
+        "bits": 16,
+        "linearGroupElements": 48,
+        "linearScalars": 64,
+        "bulletproofGroupElements": 12,
+        "bulletproofScalars": 5
+      },
+      {
+        "bits": 32,
+        "linearGroupElements": 96,
+        "linearScalars": 128,
+        "bulletproofGroupElements": 14,
+        "bulletproofScalars": 5
+      },
+      {
+        "bits": 64,
+        "linearGroupElements": 192,
+        "linearScalars": 256,
+        "bulletproofGroupElements": 16,
+        "bulletproofScalars": 5
+      }
+    ],
     "selectiveDisclosure": [
       {
         "leaves": 1024,
