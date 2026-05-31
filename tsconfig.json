@@ -11,6 +11,7 @@
     { "path": "packages/file" },
     { "path": "packages/proofentity" },
     { "path": "packages/proofstore" },
-    { "path": "packages/provenance" }
+    { "path": "packages/provenance" },
+    { "path": "packages/privacy" }
   ]
 }
