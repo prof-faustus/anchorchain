@@ -19,6 +19,9 @@ import { splitSecret, reconstruct } from './shamir.js';
 export type { Share } from './shamir.js';
 export { splitSecret, reconstruct } from './shamir.js';
 
+export type { NonceCommitment, NonceReveal, PartialSig, SchnorrSignature, ThresholdError } from './thresholdschnorr.js';
+export { ThresholdParty, lagrangeCoefficient, verifyCommitments, aggregate, aggregatedR, verifyThresholdSchnorr } from './thresholdschnorr.js';
+
 export type LifecycleKind = 'genesis' | 'rotation' | 'revocation';
 
 export interface LifecycleEvent {
