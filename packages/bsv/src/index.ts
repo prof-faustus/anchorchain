@@ -64,6 +64,9 @@ export {
   pointFromHex,
 } from './curve.js';
 
+export type { EcdsaSig } from './ecdsa.js';
+export { pubKeyOf, ecdsaSign, ecdsaVerify } from './ecdsa.js';
+
 export type { TxInput, TxOutput, Transaction } from './transaction.js';
 export { parseTransaction, serializeTransaction, txidOf } from './transaction.js';
 
