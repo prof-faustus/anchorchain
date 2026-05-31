@@ -10,6 +10,8 @@
 import type { Result } from '@anchorchain/bsv';
 import { ok, err, doubleSha256, HashOps, toHexLower } from '@anchorchain/bsv';
 
+export { FileBackend } from './fsbackend.js';
+
 export type StoreError =
   | { kind: 'NotFound'; message: string; key: string }
   | { kind: 'Tampered'; message: string; key: string }

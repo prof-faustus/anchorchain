@@ -8,7 +8,7 @@
 // Every applied op extends an anchorable hash-chained ledger. No balance, blinding,
 // or proof witness is ever logged.
 import type { Hash, Result } from '@anchorchain/bsv';
-import { ok, err, doubleSha256, concat, writeVarInt, HashOps, pointMulG, pointToHex } from '@anchorchain/bsv';
+import { ok, err, doubleSha256, concat, writeVarInt, HashOps, pointMulG, pointToHex, pointFromHex } from '@anchorchain/bsv';
 import type { Commitment, RangeProof, SchnorrProof } from '@anchorchain/privacy';
 import { verifyConservation, verifyRange } from '@anchorchain/privacy';
 
@@ -104,6 +104,34 @@ export class CreditLedger {
     return this.lastHash;
   }
 
+  // Durable snapshot of the whole ledger: confidential balances (commitments as
+  // hex), the applied-op set (for the no-double-debit guard), the entry log
+  // (amounts as decimal strings), and the chain head. restore() rebuilds it.
+  snapshot(): CreditSnapshot {
+    return {
+      bits: this.bits,
+      balances: [...this.balances.entries()].map(([agentId, c]) => ({ agentId, commitmentHex: pointToHex(c) })),
+      appliedOps: [...this.appliedOps],
+      entries: this.entries.map((e) => ({ ...e, amount: e.amount.toString() })),
+      lastHashDisplay: HashOps.toDisplayHex(this.lastHash),
+    };
+  }
+
+  static restore(snapshot: CreditSnapshot): CreditLedger {
+    const ledger = new CreditLedger(snapshot.bits);
+    for (const b of snapshot.balances) {
+      const p = pointFromHex(b.commitmentHex);
+      if (!p.ok) throw new Error('snapshot has a malformed balance commitment');
+      ledger.balances.set(b.agentId, p.value as Commitment);
+    }
+    for (const op of snapshot.appliedOps) ledger.appliedOps.add(op);
+    for (const e of snapshot.entries) ledger.entries.push({ ...e, amount: BigInt(e.amount) });
+    const h = HashOps.fromDisplayHex(snapshot.lastHashDisplay);
+    if (!h.ok) throw new Error('snapshot has a malformed head hash');
+    ledger.lastHash = h.value;
+    return ledger;
+  }
+
   private preCheck(agentId: string, opId: string, amount: bigint): Result<true, CreditError> {
     if (!this.balances.has(agentId)) return err({ kind: 'UnknownAccount', message: `unknown account ${agentId}`, agentId });
     if (this.appliedOps.has(opId)) return err({ kind: 'ReplayedOp', message: `op ${opId} already applied`, opId });
@@ -125,6 +153,17 @@ export class CreditLedger {
     this.lastHash = h;
     return entry;
   }
+}
+
+export interface LedgerEntryDto extends Omit<LedgerEntry, 'amount'> {
+  amount: string;
+}
+export interface CreditSnapshot {
+  bits: number;
+  balances: Array<{ agentId: string; commitmentHex: string }>;
+  appliedOps: string[];
+  entries: LedgerEntryDto[];
+  lastHashDisplay: string;
 }
 
 // Verify the ledger hash chain links from genesis to head.

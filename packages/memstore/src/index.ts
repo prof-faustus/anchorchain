@@ -3,7 +3,7 @@
 // Anchoring is tiered (an ephemeral coarse tier and a critical fine tier),
 // recorded per atom.
 import type { Hash, Result } from '@anchorchain/bsv';
-import { ok, err } from '@anchorchain/bsv';
+import { ok, err, HashOps } from '@anchorchain/bsv';
 
 export type Tier = 'ephemeral' | 'critical';
 
@@ -71,6 +71,52 @@ export class MemStore {
   totalAppended(): number {
     return this.log.length;
   }
+
+  // Durable snapshot: the full append-only log, the open batch, and the counters,
+  // serialised to plain JSON-safe values (content hashes as display hex, logical
+  // timestamps as decimal strings). restore() rebuilds an equivalent MemStore.
+  snapshot(): MemSnapshot {
+    return {
+      policy: { closeOnCount: this.policy.closeOnCount, closeOnLogicalInterval: this.policy.closeOnLogicalInterval.toString(), maxBatchSize: this.policy.maxBatchSize },
+      log: this.log.map(atomToDto),
+      open: this.open.map(atomToDto),
+      openedAtLogical: this.openedAtLogical === undefined ? null : this.openedAtLogical.toString(),
+      batchCounter: this.batchCounter,
+    };
+  }
+
+  static restore(snapshot: MemSnapshot): MemStore {
+    const store = new MemStore({ closeOnCount: snapshot.policy.closeOnCount, closeOnLogicalInterval: BigInt(snapshot.policy.closeOnLogicalInterval), maxBatchSize: snapshot.policy.maxBatchSize });
+    for (const dto of snapshot.log) store.log.push(dtoToAtom(dto));
+    store.open = snapshot.open.map(dtoToAtom);
+    store.openedAtLogical = snapshot.openedAtLogical === null ? undefined : BigInt(snapshot.openedAtLogical);
+    store.batchCounter = snapshot.batchCounter;
+    return store;
+  }
+}
+
+export interface MemoryAtomDto {
+  vectorId: string;
+  contentHashHex: string;
+  logicalTimestamp: string;
+  agentStateId: string;
+  tier: Tier;
+}
+export interface MemSnapshot {
+  policy: { closeOnCount: number; closeOnLogicalInterval: string; maxBatchSize: number };
+  log: MemoryAtomDto[];
+  open: MemoryAtomDto[];
+  openedAtLogical: string | null;
+  batchCounter: number;
+}
+
+function atomToDto(a: MemoryAtom): MemoryAtomDto {
+  return { vectorId: a.vectorId, contentHashHex: HashOps.toDisplayHex(a.contentHash), logicalTimestamp: a.logicalTimestamp.toString(), agentStateId: a.agentStateId, tier: a.tier };
+}
+function dtoToAtom(d: MemoryAtomDto): MemoryAtom {
+  const h = HashOps.fromDisplayHex(d.contentHashHex);
+  if (!h.ok) throw new Error('snapshot has a malformed content hash');
+  return { vectorId: d.vectorId, contentHash: h.value, logicalTimestamp: BigInt(d.logicalTimestamp), agentStateId: d.agentStateId, tier: d.tier };
 }
 
 // The Merkle leaves for a batch are the atoms' content hashes (in append order).
