@@ -1,0 +1,10 @@
+{
+  "name": "@anchorchain/shard",
+  "version": "0.1.0",
+  "description": "Proof-sharding selective disclosure (WO 2022/100946, WO 2025/119666): non-overlapping proof portions, predetermined-level proof-assistance, verifyWithAssistance, optional trusted-mode homomorphic compression.",
+  "type": "module",
+  "exports": { ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" } },
+  "types": "./dist/index.d.ts",
+  "scripts": { "build": "tsc -b", "test": "node --test \"test/**/*.test.ts\"", "lint": "tsc -b" },
+  "dependencies": { "@anchorchain/bsv": "*", "@anchorchain/merkle": "*" }
+}

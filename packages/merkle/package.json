@@ -1,0 +1,10 @@
+{
+  "name": "@anchorchain/merkle",
+  "version": "0.1.0",
+  "description": "Merkle batch tree: leaf hashing, root (batch fingerprint), proofs, verification, and proveAgainstChain terminating in the BSV header chain.",
+  "type": "module",
+  "exports": { ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" } },
+  "types": "./dist/index.d.ts",
+  "scripts": { "build": "tsc -b", "test": "node --test \"test/**/*.test.ts\"", "lint": "tsc -b" },
+  "dependencies": { "@anchorchain/bsv": "*" }
+}
