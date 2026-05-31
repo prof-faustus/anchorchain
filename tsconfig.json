@@ -8,6 +8,9 @@
     { "path": "packages/shard" },
     { "path": "packages/memstore" },
     { "path": "packages/anchor" },
-    { "path": "packages/file" }
+    { "path": "packages/file" },
+    { "path": "packages/proofentity" },
+    { "path": "packages/proofstore" },
+    { "path": "packages/provenance" }
   ]
 }
