@@ -14,6 +14,8 @@
     { "path": "packages/provenance" },
     { "path": "packages/privacy" },
     { "path": "packages/custody" },
-    { "path": "packages/identity" }
+    { "path": "packages/identity" },
+    { "path": "packages/credit" },
+    { "path": "packages/settlement" }
   ]
 }
