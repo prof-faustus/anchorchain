@@ -5,6 +5,9 @@
     { "path": "packages/schema" },
     { "path": "packages/hashing" },
     { "path": "packages/merkle" },
-    { "path": "packages/shard" }
+    { "path": "packages/shard" },
+    { "path": "packages/memstore" },
+    { "path": "packages/anchor" },
+    { "path": "packages/file" }
   ]
 }
