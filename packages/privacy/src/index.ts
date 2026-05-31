@@ -24,7 +24,7 @@ export { proveMembership, verifyMembership } from './membership.js';
 
 export { netCommitment, proveConservation, verifyConservation } from './conservation.js';
 
-export type { MetadataMode, MetadataField, CleartextField, ObfuscatedField } from './metadata.js';
-export { cleartextField, obfuscateField, verifyObfuscatedField } from './metadata.js';
+export type { MetadataMode, MetadataField, CleartextField, ObfuscatedField, MembershipFieldObf, MetadataRecord } from './metadata.js';
+export { cleartextField, obfuscateField, verifyObfuscatedField, obfuscateSetField, verifySetField, verifyRecord } from './metadata.js';
 
 export { randScalar, challenge, scalarBytes32 } from './transcript.js';

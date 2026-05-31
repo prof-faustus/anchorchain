@@ -12,6 +12,8 @@ import type { Commitment } from './commit.js';
 import { commit } from './commit.js';
 import type { RangeProof } from './range.js';
 import { proveRange, verifyRange } from './range.js';
+import type { MembershipProof } from './membership.js';
+import { proveMembership, verifyMembership } from './membership.js';
 
 export type MetadataMode = 'cleartext' | 'obfuscated';
 
@@ -30,7 +32,22 @@ export interface ObfuscatedField {
   rangeProof: RangeProof; // proof that value - bucketLow in [0, 2^bucketBits)
 }
 
-export type MetadataField = CleartextField | ObfuscatedField;
+// A categorical field obfuscated to "the value is one of this public set", hiding
+// which element, via a zero-knowledge membership proof.
+export interface MembershipFieldObf {
+  mode: 'obfuscated-set';
+  name: string;
+  commitment: Commitment;
+  set: Scalar[];
+  proof: MembershipProof;
+}
+
+export type MetadataField = CleartextField | ObfuscatedField | MembershipFieldObf;
+
+// A whole record of mixed cleartext and obfuscated fields, verified together.
+export interface MetadataRecord {
+  fields: MetadataField[];
+}
 
 export function cleartextField(name: string, value: Scalar): CleartextField {
   return { mode: 'cleartext', name, value };
@@ -53,4 +70,27 @@ export function verifyObfuscatedField(field: ObfuscatedField): boolean {
   // C' = C - bucketLow*G commits to (value - bucketLow) under the same blinding
   const shifted = scalarIsZero(field.bucketLow) ? field.commitment : pointAdd(field.commitment, pointNeg(pointMulG(scalarMod(field.bucketLow))));
   return verifyRange(shifted as Commitment, field.rangeProof);
+}
+
+// Obfuscate a categorical field to membership in a public set, hiding the element.
+export function obfuscateSetField(name: string, value: Scalar, blinding: Scalar, set: Scalar[]): { ok: true; field: MembershipFieldObf } | { ok: false; error: string } {
+  const commitment = commit(value, blinding);
+  const proof = proveMembership(commitment, blinding, set, value);
+  if (!proof.ok) return { ok: false, error: 'value is not in the set' };
+  return { ok: true, field: { mode: 'obfuscated-set', name, commitment, set, proof: proof.proof } };
+}
+
+export function verifySetField(field: MembershipFieldObf): boolean {
+  return verifyMembership(field.commitment, field.set, field.proof);
+}
+
+// Verify a whole record: cleartext fields are trivially accepted, bucket fields by
+// their range proof, set fields by their membership proof.
+export function verifyRecord(record: MetadataRecord): boolean {
+  for (const f of record.fields) {
+    if (f.mode === 'cleartext') continue;
+    if (f.mode === 'obfuscated' && !verifyObfuscatedField(f)) return false;
+    if (f.mode === 'obfuscated-set' && !verifySetField(f)) return false;
+  }
+  return true;
 }
