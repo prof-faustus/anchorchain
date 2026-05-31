@@ -70,6 +70,41 @@ export interface Transport {
   request(path: string, body?: string): Promise<TransportResult>;
 }
 
+// A minimal shape of the fetch Response this transport relies on, so a stub can be
+// injected for tests without a real network.
+export interface FetchResponseLike {
+  status: number;
+  ok: boolean;
+  text(): Promise<string>;
+}
+export type FetchLike = (url: string, init?: { method?: string; headers?: Record<string, string>; body?: string }) => Promise<FetchResponseLike>;
+
+// Production HTTP transport: GET when there is no body, POST otherwise. A 404 maps
+// to notFound, any other non-2xx and any thrown error map to unreachable, and a 2xx
+// returns the response text. The fetch implementation is injectable (defaults to the
+// global fetch) so status mapping is unit-testable offline.
+export class FetchTransport implements Transport {
+  private readonly baseUrl: string;
+  private readonly headers: Record<string, string>;
+  private readonly fetchFn: FetchLike;
+  constructor(baseUrl: string, opts?: { headers?: Record<string, string>; fetchFn?: FetchLike }) {
+    this.baseUrl = baseUrl.replace(/\/+$/, '');
+    this.headers = opts?.headers ?? {};
+    this.fetchFn = opts?.fetchFn ?? ((url, init) => fetch(url, init) as unknown as Promise<FetchResponseLike>);
+  }
+  async request(path: string, body?: string): Promise<TransportResult> {
+    const url = this.baseUrl + path;
+    try {
+      const res = body === undefined ? await this.fetchFn(url, { headers: this.headers }) : await this.fetchFn(url, { method: 'POST', headers: { ...this.headers, 'content-type': 'text/plain' }, body });
+      if (res.status === 404) return { kind: 'notFound' };
+      if (!res.ok) return { kind: 'unreachable', detail: `HTTP ${res.status}` };
+      return { kind: 'ok', body: await res.text() };
+    } catch (e) {
+      return { kind: 'unreachable', detail: e instanceof Error ? e.message : 'fetch failed' };
+    }
+  }
+}
+
 export class TeranodeClient implements NodeClient {
   private readonly transport: Transport;
   constructor(transport: Transport) {
