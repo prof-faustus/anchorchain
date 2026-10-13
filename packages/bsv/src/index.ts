@@ -78,4 +78,4 @@ export { HeaderChain } from './headerchain.js';
 export { DEFAULT_MAX_CARRIER_BYTES, buildDataCarrier, parseDataCarrier } from './datacarrier.js';
 
 export type { NodeClient, MerkleBranch, OfflineDataset, Transport, TransportResult, FetchLike, FetchResponseLike } from './nodeclient.js';
-export { OfflineNodeClient, TeranodeClient, FetchTransport } from './nodeclient.js';
+export { OfflineNodeClient, TeranodeClient, WhatsOnChainClient, FetchTransport } from './nodeclient.js';
